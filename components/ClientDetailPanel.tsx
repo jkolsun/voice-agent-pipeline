@@ -5,6 +5,7 @@ import { ClientDemo } from "@/lib/types";
 import StatusBadge from "./StatusBadge";
 import ArtifactViewer from "./ArtifactViewer";
 import CopyButton from "./CopyButton";
+import GenerateDemoLinkDialog from "./GenerateDemoLinkDialog";
 import {
   X,
   Building2,
@@ -18,6 +19,7 @@ import {
   Play,
   Briefcase,
   MessageCircle,
+  Link2,
 } from "lucide-react";
 
 interface ClientDetailPanelProps {
@@ -38,6 +40,7 @@ export default function ClientDetailPanel({
   onPreview,
 }: ClientDetailPanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [showDemoLinkDialog, setShowDemoLinkDialog] = useState(false);
 
   if (!client) return null;
 
@@ -269,13 +272,22 @@ export default function ClientDetailPanel({
       <div className="px-6 py-5 border-t border-slate-700/50 bg-slate-900/95 backdrop-blur-sm space-y-3">
         {client.status === "demo_ready" && (
           <>
-            <button
-              onClick={() => onPreview(client)}
-              className="w-full btn-secondary py-3"
-            >
-              <Play className="w-4 h-4 mr-2" />
-              Preview Demo
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => onPreview(client)}
+                className="flex-1 btn-secondary py-3"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Preview
+              </button>
+              <button
+                onClick={() => setShowDemoLinkDialog(true)}
+                className="flex-1 btn-secondary py-3 border-brand-500/30 text-brand-400 hover:bg-brand-500/10"
+              >
+                <Link2 className="w-4 h-4 mr-2" />
+                Share Link
+              </button>
+            </div>
             <button
               onClick={() => onApprove(client)}
               className="w-full btn-success py-3"
@@ -288,13 +300,22 @@ export default function ClientDetailPanel({
 
         {client.status === "approved" && (
           <>
-            <button
-              onClick={() => onPreview(client)}
-              className="w-full btn-secondary py-3"
-            >
-              <Play className="w-4 h-4 mr-2" />
-              Preview Demo
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => onPreview(client)}
+                className="flex-1 btn-secondary py-3"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Preview
+              </button>
+              <button
+                onClick={() => setShowDemoLinkDialog(true)}
+                className="flex-1 btn-secondary py-3 border-brand-500/30 text-brand-400 hover:bg-brand-500/10"
+              >
+                <Link2 className="w-4 h-4 mr-2" />
+                Share Link
+              </button>
+            </div>
             <button
               onClick={() => onPublish(client)}
               className="w-full btn-primary py-3"
@@ -306,13 +327,22 @@ export default function ClientDetailPanel({
         )}
 
         {client.status === "production" && (
-          <button
-            onClick={() => onPreview(client)}
-            className="w-full btn-secondary py-3"
-          >
-            <Play className="w-4 h-4 mr-2" />
-            Preview Demo
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => onPreview(client)}
+              className="flex-1 btn-secondary py-3"
+            >
+              <Play className="w-4 h-4 mr-2" />
+              Preview
+            </button>
+            <button
+              onClick={() => setShowDemoLinkDialog(true)}
+              className="flex-1 btn-secondary py-3 border-brand-500/30 text-brand-400 hover:bg-brand-500/10"
+            >
+              <Link2 className="w-4 h-4 mr-2" />
+              Share Link
+            </button>
+          </div>
         )}
 
         {client.status === "draft" && (
@@ -321,6 +351,13 @@ export default function ClientDetailPanel({
           </div>
         )}
       </div>
+
+      {/* Demo Link Dialog */}
+      <GenerateDemoLinkDialog
+        client={client}
+        isOpen={showDemoLinkDialog}
+        onClose={() => setShowDemoLinkDialog(false)}
+      />
     </div>
   );
 }

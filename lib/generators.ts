@@ -1,4 +1,4 @@
-import { ClientDemo, ClientFormData, QuickCreateFormData, INDUSTRY_DEFAULTS } from "./types";
+import { ClientDemo, ClientFormData, QuickCreateFormData, INDUSTRY_DEFAULTS, DemoLink } from "./types";
 import {
   generateDemoSystemPrompt,
   generateProductionSystemPrompt,
@@ -129,5 +129,46 @@ export function publishToProduction(
       elevenlabs_voice_id: elevenlabsVoiceId,
       twilio_number: twilioNumber,
     },
+  };
+}
+
+// Generate a URL-safe slug from business name
+function generateSlug(businessName: string): string {
+  const baseSlug = businessName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 30);
+
+  // Add random suffix for uniqueness
+  const randomSuffix = Math.random().toString(36).substring(2, 6);
+  return `${baseSlug}-${randomSuffix}`;
+}
+
+// Create a demo link for a client
+export function createDemoLink(
+  client: ClientDemo,
+  options: {
+    expiresInDays?: number | null;
+    maxDurationSeconds?: number;
+  } = {}
+): DemoLink {
+  const { expiresInDays = 7, maxDurationSeconds = 120 } = options;
+
+  const now = new Date();
+  const expiresAt = expiresInDays
+    ? new Date(now.getTime() + expiresInDays * 24 * 60 * 60 * 1000).toISOString()
+    : null;
+
+  return {
+    id: uuidv4(),
+    client_id: client.id,
+    slug: generateSlug(client.business_name),
+    created_at: now.toISOString(),
+    expires_at: expiresAt,
+    max_duration_seconds: maxDurationSeconds,
+    is_active: true,
+    usage_count: 0,
   };
 }

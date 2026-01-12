@@ -1,6 +1,7 @@
-import { ClientDemo } from "./types";
+import { ClientDemo, DemoLink } from "./types";
 
 const STORAGE_KEY = "voice_agent_demos";
+const DEMO_LINKS_KEY = "voice_agent_demo_links";
 
 export function getClients(): ClientDemo[] {
   if (typeof window === "undefined") return [];
@@ -69,10 +70,69 @@ export function importClientsFromJSON(jsonString: string): boolean {
   try {
     const clients = JSON.parse(jsonString);
     if (!Array.isArray(clients)) return false;
-    
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(clients));
     return true;
   } catch {
     return false;
   }
+}
+
+// Demo Links Storage Functions
+export function getDemoLinks(): DemoLink[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const data = localStorage.getItem(DEMO_LINKS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function getDemoLink(id: string): DemoLink | null {
+  const links = getDemoLinks();
+  return links.find((l) => l.id === id) || null;
+}
+
+export function getDemoLinkBySlug(slug: string): DemoLink | null {
+  const links = getDemoLinks();
+  return links.find((l) => l.slug === slug) || null;
+}
+
+export function getDemoLinksForClient(clientId: string): DemoLink[] {
+  const links = getDemoLinks();
+  return links.filter((l) => l.client_id === clientId);
+}
+
+export function saveDemoLink(link: DemoLink): void {
+  const links = getDemoLinks();
+  const existingIndex = links.findIndex((l) => l.id === link.id);
+
+  if (existingIndex >= 0) {
+    links[existingIndex] = link;
+  } else {
+    links.push(link);
+  }
+
+  localStorage.setItem(DEMO_LINKS_KEY, JSON.stringify(links));
+}
+
+export function deleteDemoLink(id: string): void {
+  const links = getDemoLinks().filter((l) => l.id !== id);
+  localStorage.setItem(DEMO_LINKS_KEY, JSON.stringify(links));
+}
+
+export function incrementDemoLinkUsage(slug: string): void {
+  const link = getDemoLinkBySlug(slug);
+  if (link) {
+    link.usage_count += 1;
+    saveDemoLink(link);
+  }
+}
+
+export function isDemoLinkValid(link: DemoLink): boolean {
+  if (!link.is_active) return false;
+  if (link.expires_at && new Date(link.expires_at) < new Date()) return false;
+  return true;
 }

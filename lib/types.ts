@@ -145,6 +145,18 @@ export interface WebsiteData {
   rawContent?: string;
 }
 
+// Demo link for sharing with clients
+export interface DemoLink {
+  id: string;
+  client_id: string;
+  slug: string;
+  created_at: string;
+  expires_at: string | null;
+  max_duration_seconds: number;
+  is_active: boolean;
+  usage_count: number;
+}
+
 // Industry defaults for auto-populating form fields
 export const INDUSTRY_DEFAULTS: Record<string, Partial<ClientFormData>> = {
   "HVAC": {
