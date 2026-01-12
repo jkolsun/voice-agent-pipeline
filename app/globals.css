@@ -1,0 +1,259 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 8%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 203 89% 53%;
+    --primary-foreground: 222 47% 6%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 203 89% 53%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --radius: 0.625rem;
+
+    /* Custom gradients */
+    --gradient-primary: linear-gradient(135deg, #0073c5 0%, #0c91e7 50%, #36acf6 100%);
+    --gradient-dark: linear-gradient(180deg, #080c14 0%, #0d1420 50%, #131a2b 100%);
+    --gradient-card: linear-gradient(180deg, rgba(23, 32, 51, 0.8) 0%, rgba(13, 20, 32, 0.9) 100%);
+    --glass-bg: rgba(23, 32, 51, 0.6);
+    --glass-border: rgba(148, 163, 184, 0.1);
+  }
+
+  html {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: var(--gradient-dark);
+    background-attachment: fixed;
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+}
+
+@layer components {
+  /* Premium kanban column */
+  .kanban-column {
+    @apply rounded-2xl overflow-hidden border border-white/[0.08];
+    background: linear-gradient(180deg, rgba(23, 32, 51, 0.4) 0%, rgba(13, 20, 32, 0.6) 100%);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Client card with hover effect */
+  .client-card {
+    @apply p-4 rounded-xl cursor-pointer border border-white/[0.08];
+    background: rgba(30, 41, 59, 0.5);
+    backdrop-filter: blur(8px);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .client-card:hover {
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(148, 163, 184, 0.2);
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 24px -8px rgba(0, 0, 0, 0.3),
+      0 4px 8px -4px rgba(0, 0, 0, 0.2);
+  }
+
+  .client-card-selected {
+    background: rgba(0, 115, 197, 0.15) !important;
+    border: 2px solid rgba(0, 145, 231, 0.5) !important;
+    box-shadow:
+      0 0 0 4px rgba(0, 145, 231, 0.1),
+      0 12px 24px -8px rgba(0, 115, 197, 0.2);
+  }
+
+  /* Status badges */
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full;
+    backdrop-filter: blur(4px);
+  }
+
+  /* Action button within cards */
+  .card-action-btn {
+    @apply flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg
+           transition-all duration-200 ease-out;
+  }
+
+  /* Info section in detail panels */
+  .info-section {
+    @apply rounded-xl p-4 border border-white/[0.06];
+    background: rgba(30, 41, 59, 0.4);
+  }
+
+  /* Service tag */
+  .service-tag {
+    @apply px-3 py-1.5 text-sm rounded-lg border border-white/[0.08];
+    background: rgba(51, 65, 85, 0.5);
+    color: #cbd5e1;
+  }
+
+  /* Header gradient */
+  .app-header {
+    background: linear-gradient(180deg, rgba(8, 12, 20, 0.95) 0%, rgba(8, 12, 20, 0.8) 100%);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+  }
+
+  /* Slide panel for sheets */
+  .slide-panel {
+    background: linear-gradient(180deg, rgba(13, 20, 32, 0.98) 0%, rgba(8, 12, 20, 0.98) 100%);
+    backdrop-filter: blur(24px);
+  }
+
+  /* Tab styles */
+  .tab-button {
+    @apply px-4 py-3 text-sm font-medium transition-all duration-200 border-b-2 -mb-px;
+  }
+
+  .tab-active {
+    @apply text-brand-400 border-brand-400;
+  }
+
+  .tab-inactive {
+    @apply text-slate-400 border-transparent hover:text-slate-200 hover:border-slate-600;
+  }
+
+  /* Legacy button classes for gradual migration */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold rounded-xl
+           text-white shadow-lg shadow-brand-600/25
+           transition-all duration-200 ease-out
+           focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:ring-offset-2 focus:ring-offset-slate-900
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none
+           hover:shadow-xl hover:shadow-brand-500/30 hover:-translate-y-0.5
+           active:translate-y-0 active:shadow-md;
+    background: var(--gradient-primary);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium rounded-xl
+           bg-secondary text-secondary-foreground
+           border border-white/10
+           backdrop-blur-sm
+           transition-all duration-200 ease-out
+           hover:bg-secondary/80 hover:border-white/20 hover:-translate-y-0.5
+           focus:outline-none focus:ring-2 focus:ring-ring/50 focus:ring-offset-2 focus:ring-offset-background
+           disabled:opacity-50 disabled:cursor-not-allowed
+           active:translate-y-0;
+  }
+
+  .btn-success {
+    @apply inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold rounded-xl
+           bg-gradient-to-r from-emerald-600 to-emerald-500 text-white
+           shadow-lg shadow-emerald-600/25
+           transition-all duration-200 ease-out
+           hover:shadow-xl hover:shadow-emerald-500/30 hover:-translate-y-0.5
+           focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:ring-offset-2 focus:ring-offset-background
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none
+           active:translate-y-0 active:shadow-md;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 text-sm rounded-xl
+           bg-secondary/60 text-foreground
+           border border-white/10
+           placeholder:text-muted-foreground
+           backdrop-blur-sm
+           focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-primary/50 focus:bg-secondary/80
+           transition-all duration-200;
+  }
+
+  .select-field {
+    @apply w-full px-4 py-3 text-sm rounded-xl
+           bg-secondary/60 text-foreground
+           border border-white/10
+           backdrop-blur-sm
+           focus:outline-none focus:ring-2 focus:ring-ring/40 focus:border-primary/50 focus:bg-secondary/80
+           transition-all duration-200
+           cursor-pointer appearance-none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-muted-foreground mb-2;
+  }
+}
+
+/* Custom scrollbar - more refined */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-white/30;
+}
+
+/* Code blocks in artifacts */
+.artifact-content {
+  @apply font-mono text-sm leading-relaxed whitespace-pre-wrap break-words;
+}
+
+/* Smooth page transitions */
+.page-transition {
+  animation: pageEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Glow effect for primary actions */
+.glow-brand {
+  box-shadow:
+    0 0 20px rgba(0, 145, 231, 0.3),
+    0 0 40px rgba(0, 145, 231, 0.1);
+}
+
+/* Modal backdrop with blur */
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+}
