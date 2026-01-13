@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { ClientDemo, DemoLink } from "@/lib/types";
 import { getClient, getDemoLinkBySlug, incrementDemoLinkUsage, isDemoLinkValid } from "@/lib/storage";
-import { Mic, Clock, AlertCircle, Building2, Phone, Shield } from "lucide-react";
+import { Mic, Clock, AlertCircle, Building2, Phone, Shield, PhoneCall } from "lucide-react";
 
 export default function DemoPage() {
   const params = useParams();
@@ -143,6 +143,38 @@ export default function DemoPage() {
           <p className="text-slate-500">Try our AI-powered voice assistant</p>
         </div>
 
+        {/* Phone Number Call-to-Action (if available) */}
+        {demoLink.demo_phone_number && (
+          <div className="relative max-w-2xl mx-auto mb-8">
+            <div className="absolute -inset-2 bg-gradient-to-r from-emerald-600/20 via-emerald-500/10 to-emerald-600/20 rounded-2xl blur-xl" />
+            <div className="relative rounded-2xl border border-emerald-500/30 bg-emerald-500/5 backdrop-blur-sm overflow-hidden p-6">
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <div className="flex-shrink-0">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-emerald-500/30 rounded-full blur-lg animate-pulse" />
+                    <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                      <PhoneCall className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="text-lg font-semibold text-white mb-1">Call to Try the Demo</h3>
+                  <p className="text-slate-400 text-sm mb-3">
+                    Dial this number to speak with our AI voice agent directly
+                  </p>
+                  <a
+                    href={`tel:${demoLink.demo_phone_number.replace(/\D/g, '')}`}
+                    className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold text-lg hover:from-emerald-500 hover:to-emerald-400 transition-all duration-300 shadow-lg shadow-emerald-600/30 hover:shadow-emerald-500/40 hover:scale-[1.02]"
+                  >
+                    <Phone className="w-5 h-5" />
+                    {demoLink.demo_phone_number}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Demo Widget Container */}
         <div className="relative max-w-2xl mx-auto">
           {/* Glow effect */}
@@ -153,8 +185,14 @@ export default function DemoPage() {
             <div className="px-6 py-5 border-b border-slate-700/50 bg-slate-800/30">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="font-semibold text-white">Voice Demo</h2>
-                  <p className="text-sm text-slate-400">Speak with our AI assistant</p>
+                  <h2 className="font-semibold text-white">
+                    {demoLink.demo_phone_number ? "Web Demo" : "Voice Demo"}
+                  </h2>
+                  <p className="text-sm text-slate-400">
+                    {demoLink.demo_phone_number
+                      ? "Or try our web-based demo below"
+                      : "Speak with our AI assistant"}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-500">
                   <Clock className="w-3.5 h-3.5" />
@@ -173,10 +211,12 @@ export default function DemoPage() {
                       onClick={() => setCallStarted(true)}
                       className="relative w-24 h-24 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center shadow-xl shadow-brand-600/30 hover:shadow-brand-500/40 hover:scale-105 transition-all duration-300"
                     >
-                      <Phone className="w-10 h-10 text-white" />
+                      <Mic className="w-10 h-10 text-white" />
                     </button>
                   </div>
-                  <h3 className="text-xl font-semibold text-white mb-2">Start Voice Demo</h3>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    {demoLink.demo_phone_number ? "Start Web Demo" : "Start Voice Demo"}
+                  </h3>
                   <p className="text-slate-400 mb-6">
                     Click to start a conversation with our AI voice agent
                   </p>

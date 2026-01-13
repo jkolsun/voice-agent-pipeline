@@ -152,9 +152,10 @@ export function createDemoLink(
   options: {
     expiresInDays?: number | null;
     maxDurationSeconds?: number;
+    demoPhoneNumber?: string;
   } = {}
 ): DemoLink {
-  const { expiresInDays = 7, maxDurationSeconds = 120 } = options;
+  const { expiresInDays = 7, maxDurationSeconds = 120, demoPhoneNumber } = options;
 
   const now = new Date();
   const expiresAt = expiresInDays
@@ -170,5 +171,6 @@ export function createDemoLink(
     max_duration_seconds: maxDurationSeconds,
     is_active: true,
     usage_count: 0,
+    demo_phone_number: demoPhoneNumber || undefined,
   };
 }

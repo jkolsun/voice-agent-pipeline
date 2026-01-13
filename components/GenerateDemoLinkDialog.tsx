@@ -30,6 +30,7 @@ import {
   ExternalLink,
   Shield,
   Plus,
+  Phone,
 } from "lucide-react";
 
 interface GenerateDemoLinkDialogProps {
@@ -47,6 +48,7 @@ export default function GenerateDemoLinkDialog({
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [expiresIn, setExpiresIn] = useState<string>("7");
   const [maxDuration, setMaxDuration] = useState<string>("120");
+  const [demoPhoneNumber, setDemoPhoneNumber] = useState<string>("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [newLink, setNewLink] = useState<DemoLink | null>(null);
 
@@ -65,12 +67,14 @@ export default function GenerateDemoLinkDialog({
     const link = createDemoLink(client, {
       expiresInDays: expiresIn === "never" ? null : parseInt(expiresIn),
       maxDurationSeconds: parseInt(maxDuration),
+      demoPhoneNumber: demoPhoneNumber.trim() || undefined,
     });
 
     saveDemoLink(link);
     setNewLink(link);
     setExistingLinks((prev) => [...prev, link]);
     setShowCreateForm(false);
+    setDemoPhoneNumber("");
   };
 
   const handleDeleteLink = (linkId: string) => {
@@ -153,7 +157,7 @@ export default function GenerateDemoLinkDialog({
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-slate-500">
+                        <div className="flex items-center gap-3 text-xs text-slate-500 flex-wrap">
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {Math.floor(link.max_duration_seconds / 60)} min limit
@@ -161,6 +165,12 @@ export default function GenerateDemoLinkDialog({
                           <span>{formatExpiry(link.expires_at)}</span>
                           <span>{link.usage_count} views</span>
                         </div>
+                        {link.demo_phone_number && (
+                          <div className="flex items-center gap-1.5 mt-2 text-xs">
+                            <Phone className="w-3 h-3 text-emerald-400" />
+                            <span className="text-emerald-400 font-medium">{link.demo_phone_number}</span>
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-1">
                         <Button
@@ -252,6 +262,25 @@ export default function GenerateDemoLinkDialog({
                       <SelectItem value="never">Never expires</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+
+                {/* Demo Phone Number */}
+                <div className="space-y-2">
+                  <Label className="text-sm text-slate-400 flex items-center gap-2">
+                    <Phone className="w-3.5 h-3.5" />
+                    Demo Phone Number
+                    <span className="text-slate-600 font-normal">(Optional)</span>
+                  </Label>
+                  <Input
+                    type="tel"
+                    value={demoPhoneNumber}
+                    onChange={(e) => setDemoPhoneNumber(e.target.value)}
+                    placeholder="+1 (555) 123-4567"
+                    className="bg-slate-900/50 border-slate-700"
+                  />
+                  <p className="text-xs text-slate-500">
+                    Add an ElevenLabs/Twilio number for clients to call directly
+                  </p>
                 </div>
 
                 <Button

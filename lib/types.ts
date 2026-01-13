@@ -155,6 +155,8 @@ export interface DemoLink {
   max_duration_seconds: number;
   is_active: boolean;
   usage_count: number;
+  // Optional demo phone number for call-in demos
+  demo_phone_number?: string;
 }
 
 // Industry defaults for auto-populating form fields
