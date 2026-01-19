@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import { ClientDemo, DemoLink } from "@/lib/types";
 import { getClient, getDemoLinkBySlug, incrementDemoLinkUsage, isDemoLinkValid } from "@/lib/storage";
 import {
-  Mic,
   Clock,
   AlertCircle,
   Building2,
@@ -15,10 +14,14 @@ import {
   MessageSquare,
   Send,
   Bot,
-  User,
   Sparkles,
   CheckCircle2,
-  ArrowRight
+  X,
+  MapPin,
+  Star,
+  ChevronRight,
+  Menu,
+  Mail
 } from "lucide-react";
 
 type DemoMode = "voice" | "chat";
@@ -39,13 +42,13 @@ export default function DemoPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [demoMode, setDemoMode] = useState<DemoMode>("chat");
-  const [callStarted, setCallStarted] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
-  // Chat state
+  // Chat widget state
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [hasNewMessage, setHasNewMessage] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -83,7 +86,7 @@ export default function DemoPage() {
       setMessages([{
         id: "1",
         role: "assistant",
-        content: `Hi! Welcome to ${clientData.business_name}. I'm here to help you with any questions about our services. How can I assist you today?`,
+        content: `Hi! Welcome to ${clientData.business_name}. How can I help you today?`,
         timestamp: new Date()
       }]);
     }
@@ -96,30 +99,12 @@ export default function DemoPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Timer for call duration
+  // Clear new message indicator when chat opens
   useEffect(() => {
-    if (!callStarted || !demoLink) return;
-
-    setTimeRemaining(demoLink.max_duration_seconds);
-
-    const timer = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev === null || prev <= 0) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [callStarted, demoLink]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
+    if (isChatOpen) {
+      setHasNewMessage(false);
+    }
+  }, [isChatOpen]);
 
   // Simulated chat responses based on client data
   const getAIResponse = (userMessage: string): string => {
@@ -136,11 +121,11 @@ export default function DemoPage() {
     }
 
     if (lowerMessage.includes("price") || lowerMessage.includes("cost") || lowerMessage.includes("quote") || lowerMessage.includes("estimate")) {
-      return "I'd be happy to help you get a quote! To provide an accurate estimate, I'll need a few details. Could you tell me more about what you're looking for?";
+      return "I'd be happy to help you get a quote! To provide an accurate estimate, could you tell me more about what you're looking for?";
     }
 
     if (lowerMessage.includes("appointment") || lowerMessage.includes("schedule") || lowerMessage.includes("book")) {
-      return "I can help you schedule an appointment! What day and time works best for you? We have availability this week.";
+      return "I can help you schedule an appointment! What day and time works best for you?";
     }
 
     if (lowerMessage.includes("location") || lowerMessage.includes("where") || lowerMessage.includes("area")) {
@@ -148,14 +133,14 @@ export default function DemoPage() {
     }
 
     if (lowerMessage.includes("contact") || lowerMessage.includes("phone") || lowerMessage.includes("call")) {
-      return "You can reach us directly, or I can have someone from our team call you back. Would you like to leave your phone number?";
+      return "I can have someone from our team call you back. Would you like to leave your phone number?";
     }
 
     if (lowerMessage.includes("hello") || lowerMessage.includes("hi") || lowerMessage.includes("hey")) {
-      return `Hello! Thanks for reaching out to ${client.business_name}. How can I help you today?`;
+      return `Hello! Thanks for reaching out. How can I help you today?`;
     }
 
-    return `Thanks for your question! At ${client.business_name}, we're committed to providing excellent service. Is there anything specific about our ${client.services[0] || "services"} I can help you with?`;
+    return `Great question! Is there anything specific about our ${client.services[0] || "services"} I can help you with?`;
   };
 
   const handleSendMessage = () => {
@@ -172,7 +157,6 @@ export default function DemoPage() {
     setInputValue("");
     setIsTyping(true);
 
-    // Simulate AI typing delay
     setTimeout(() => {
       const aiResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -218,244 +202,210 @@ export default function DemoPage() {
   if (!client || !demoLink) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-925 to-slate-950">
-      {/* Header */}
-      <header className="border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
+    <div className="min-h-screen bg-slate-950">
+      {/* Demo Mode Header */}
+      <div className="bg-gradient-to-r from-brand-600 to-violet-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-5 h-5" />
+              <span className="font-medium">Lead Capture System Demo</span>
+              <span className="text-white/60">|</span>
+              <span className="text-sm text-white/80">{client.business_name}</span>
             </div>
-            <div>
-              <span className="text-sm font-medium text-white">Lead Capture System</span>
-              <p className="text-xs text-slate-500">AI-Powered Demo</p>
-            </div>
-          </div>
-          {callStarted && timeRemaining !== null && (
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
-              timeRemaining < 30 ? "bg-red-500/20 text-red-400" : "bg-slate-800 text-slate-300"
-            }`}>
-              <Clock className="w-4 h-4" />
-              <span className="font-mono text-sm">{formatTime(timeRemaining)}</span>
-            </div>
-          )}
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        {/* Business Hero */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-sm mb-4">
-            <Building2 className="w-4 h-4" />
-            {client.industry}
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{client.business_name}</h1>
-          <p className="text-slate-400">{client.service_area}</p>
-        </div>
-
-        {/* Features Pills */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm">
-            <CheckCircle2 className="w-4 h-4" />
-            24/7 AI Response
-          </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-sm">
-            <CheckCircle2 className="w-4 h-4" />
-            Instant Lead Capture
-          </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm">
-            <CheckCircle2 className="w-4 h-4" />
-            Never Miss a Call
-          </div>
-        </div>
-
-        {/* Demo Mode Selector */}
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex p-1.5 rounded-2xl bg-slate-800/50 border border-slate-700/50">
-            <button
-              onClick={() => setDemoMode("chat")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${
-                demoMode === "chat"
-                  ? "bg-gradient-to-r from-violet-600 to-violet-500 text-white shadow-lg shadow-violet-600/30"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <MessageSquare className="w-5 h-5" />
-              Website Chatbot
-            </button>
-            <button
-              onClick={() => setDemoMode("voice")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${
-                demoMode === "voice"
-                  ? "bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-lg shadow-emerald-600/30"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <Phone className="w-5 h-5" />
-              Voice Agent
-            </button>
-          </div>
-        </div>
-
-        {/* Demo Content */}
-        <div className="grid lg:grid-cols-2 gap-8 items-start">
-          {/* Left: Info Panel */}
-          <div className="space-y-6">
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-6">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-brand-400" />
-                {demoMode === "chat" ? "Website Chatbot" : "Voice Agent"} Features
-              </h3>
-
-              {demoMode === "chat" ? (
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-violet-400" />
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">Instant Website Engagement</p>
-                      <p className="text-sm text-slate-400">Captures leads the moment they land on your site</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-violet-400" />
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">Answers Questions 24/7</p>
-                      <p className="text-sm text-slate-400">Trained on your services, pricing, and FAQs</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-violet-400" />
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">Books Appointments</p>
-                      <p className="text-sm text-slate-400">Integrates with your calendar for seamless scheduling</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-violet-400" />
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">Collects Contact Info</p>
-                      <p className="text-sm text-slate-400">Gathers name, phone, email for follow-up</p>
-                    </div>
-                  </li>
-                </ul>
-              ) : (
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">Answers Every Call</p>
-                      <p className="text-sm text-slate-400">No more missed calls or voicemail limbo</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">Natural Conversation</p>
-                      <p className="text-sm text-slate-400">Sounds human, handles complex questions</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">Qualifies Leads</p>
-                      <p className="text-sm text-slate-400">Asks the right questions before transferring</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">After-Hours Coverage</p>
-                      <p className="text-sm text-slate-400">Captures leads even when you're closed</p>
-                    </div>
-                  </li>
-                </ul>
-              )}
-            </div>
-
-            {/* Services */}
-            <div className="rounded-2xl border border-slate-700/50 bg-slate-900/50 backdrop-blur-sm p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Services Covered</h3>
-              <div className="flex flex-wrap gap-2">
-                {client.services.map((service, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1.5 text-sm rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/50"
-                  >
-                    {service}
-                  </span>
-                ))}
+            <div className="flex items-center gap-4">
+              {/* Demo Mode Toggle */}
+              <div className="flex items-center gap-2 bg-white/10 rounded-lg p-1">
+                <button
+                  onClick={() => setDemoMode("chat")}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                    demoMode === "chat"
+                      ? "bg-white text-brand-600"
+                      : "text-white/80 hover:text-white"
+                  }`}
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  Chatbot
+                </button>
+                <button
+                  onClick={() => setDemoMode("voice")}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                    demoMode === "voice"
+                      ? "bg-white text-brand-600"
+                      : "text-white/80 hover:text-white"
+                  }`}
+                >
+                  <Phone className="w-4 h-4" />
+                  Voice
+                </button>
               </div>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Right: Demo Widget */}
-          <div className="relative">
-            <div className={`absolute -inset-4 rounded-3xl blur-2xl ${
-              demoMode === "chat"
-                ? "bg-gradient-to-r from-violet-600/20 via-violet-500/10 to-violet-600/20"
-                : "bg-gradient-to-r from-emerald-600/20 via-emerald-500/10 to-emerald-600/20"
-            }`} />
+      {demoMode === "chat" ? (
+        /* Website Mockup with Floating Chat Widget */
+        <div className="relative min-h-[calc(100vh-52px)] bg-white">
+          {/* Fake Website Header */}
+          <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+            <div className="max-w-7xl mx-auto px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center">
+                    <Building2 className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="font-bold text-gray-900 text-lg">{client.business_name}</h1>
+                    <p className="text-xs text-gray-500">{client.industry}</p>
+                  </div>
+                </div>
+                <nav className="hidden md:flex items-center gap-8">
+                  <a href="#" className="text-gray-600 hover:text-gray-900 text-sm font-medium">Services</a>
+                  <a href="#" className="text-gray-600 hover:text-gray-900 text-sm font-medium">About</a>
+                  <a href="#" className="text-gray-600 hover:text-gray-900 text-sm font-medium">Contact</a>
+                  <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
+                    Get Quote
+                  </button>
+                </nav>
+                <button className="md:hidden p-2">
+                  <Menu className="w-6 h-6 text-gray-600" />
+                </button>
+              </div>
+            </div>
+          </header>
 
-            {demoMode === "chat" ? (
-              /* Chat Widget */
-              <div className="relative rounded-2xl border border-slate-700/50 bg-slate-900/90 backdrop-blur-sm overflow-hidden shadow-2xl">
+          {/* Fake Website Hero */}
+          <section className="bg-gradient-to-br from-gray-50 to-gray-100 py-20">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="max-w-3xl">
+                <div className="flex items-center gap-2 text-blue-600 text-sm font-medium mb-4">
+                  <Star className="w-4 h-4 fill-current" />
+                  <span>Trusted by 500+ customers in {client.service_area}</span>
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                  Professional {client.industry} Services You Can Trust
+                </h2>
+                <p className="text-xl text-gray-600 mb-8">
+                  Expert {client.services[0]?.toLowerCase() || "services"} and more.
+                  Serving {client.service_area} with quality and reliability.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <button className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                    Get Free Quote
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                  <button className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 flex items-center gap-2">
+                    <Phone className="w-4 h-4" />
+                    Call Us Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Fake Services Section */}
+          <section className="py-16 bg-white">
+            <div className="max-w-7xl mx-auto px-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">Our Services</h3>
+              <div className="grid md:grid-cols-3 gap-6">
+                {client.services.slice(0, 6).map((service, i) => (
+                  <div key={i} className="p-6 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all">
+                    <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                      <CheckCircle2 className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h4 className="font-semibold text-gray-900 mb-2">{service}</h4>
+                    <p className="text-sm text-gray-600">
+                      Professional {service.toLowerCase()} services tailored to your needs.
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Fake Contact Section */}
+          <section className="py-16 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-6">
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1">Service Area</h4>
+                    <p className="text-gray-600">{client.service_area}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1">Business Hours</h4>
+                    <p className="text-gray-600">{client.hours?.weekday || "Mon-Fri 9AM-5PM"}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1">Get In Touch</h4>
+                    <p className="text-gray-600">24/7 AI Chat Support</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Floating Chat Widget */}
+          <div className="fixed bottom-6 right-6 z-50">
+            {/* Chat Window */}
+            {isChatOpen && (
+              <div className="absolute bottom-20 right-0 w-[380px] rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-5 duration-300 border border-gray-200">
                 {/* Chat Header */}
-                <div className="px-5 py-4 border-b border-slate-700/50 bg-gradient-to-r from-violet-600/20 to-violet-500/10">
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center">
-                        <Bot className="w-5 h-5 text-white" />
+                <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                          <Bot className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-blue-600" />
                       </div>
-                      <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-slate-900" />
+                      <div>
+                        <h3 className="font-semibold text-white text-sm">{client.business_name}</h3>
+                        <p className="text-xs text-blue-100">Typically replies instantly</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-white">{client.business_name}</h3>
-                      <p className="text-xs text-emerald-400">Online now</p>
-                    </div>
+                    <button
+                      onClick={() => setIsChatOpen(false)}
+                      className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+                    >
+                      <X className="w-5 h-5 text-white" />
+                    </button>
                   </div>
                 </div>
 
                 {/* Chat Messages */}
-                <div className="h-[400px] overflow-y-auto p-4 space-y-4">
+                <div className="h-[350px] overflow-y-auto p-4 space-y-4 bg-gray-50">
                   {messages.map((message) => (
                     <div
                       key={message.id}
-                      className={`flex items-start gap-3 ${
+                      className={`flex items-end gap-2 ${
                         message.role === "user" ? "flex-row-reverse" : ""
                       }`}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        message.role === "assistant"
-                          ? "bg-gradient-to-br from-violet-500 to-violet-600"
-                          : "bg-slate-700"
-                      }`}>
-                        {message.role === "assistant" ? (
+                      {message.role === "assistant" && (
+                        <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
                           <Bot className="w-4 h-4 text-white" />
-                        ) : (
-                          <User className="w-4 h-4 text-slate-300" />
-                        )}
-                      </div>
-                      <div className={`max-w-[75%] rounded-2xl px-4 py-3 ${
+                        </div>
+                      )}
+                      <div className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
                         message.role === "assistant"
-                          ? "bg-slate-800 text-slate-100 rounded-tl-md"
-                          : "bg-violet-600 text-white rounded-tr-md"
+                          ? "bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-md"
+                          : "bg-blue-600 text-white rounded-br-md"
                       }`}>
                         <p className="text-sm leading-relaxed">{message.content}</p>
                       </div>
@@ -463,15 +413,15 @@ export default function DemoPage() {
                   ))}
 
                   {isTyping && (
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center flex-shrink-0">
+                    <div className="flex items-end gap-2">
+                      <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
                         <Bot className="w-4 h-4 text-white" />
                       </div>
-                      <div className="bg-slate-800 rounded-2xl rounded-tl-md px-4 py-3">
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-2 h-2 rounded-full bg-slate-500 animate-bounce" style={{ animationDelay: "0ms" }} />
-                          <div className="w-2 h-2 rounded-full bg-slate-500 animate-bounce" style={{ animationDelay: "150ms" }} />
-                          <div className="w-2 h-2 rounded-full bg-slate-500 animate-bounce" style={{ animationDelay: "300ms" }} />
+                      <div className="bg-white rounded-2xl rounded-bl-md px-4 py-3 shadow-sm border border-gray-100">
+                        <div className="flex items-center gap-1">
+                          <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+                          <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                          <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "300ms" }} />
                         </div>
                       </div>
                     </div>
@@ -480,129 +430,139 @@ export default function DemoPage() {
                 </div>
 
                 {/* Chat Input */}
-                <div className="p-4 border-t border-slate-700/50 bg-slate-800/50">
-                  <div className="flex items-center gap-3">
+                <div className="p-4 bg-white border-t border-gray-100">
+                  <div className="flex items-center gap-2">
                     <input
                       type="text"
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                      placeholder="Type a message..."
-                      className="flex-1 px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
+                      placeholder="Type your message..."
+                      className="flex-1 px-4 py-2.5 rounded-full bg-gray-100 border-0 text-gray-800 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button
                       onClick={handleSendMessage}
                       disabled={!inputValue.trim()}
-                      className="w-12 h-12 rounded-xl bg-gradient-to-r from-violet-600 to-violet-500 text-white flex items-center justify-center hover:from-violet-500 hover:to-violet-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <Send className="w-5 h-5" />
+                      <Send className="w-4 h-4" />
                     </button>
                   </div>
-                  <p className="text-xs text-slate-500 mt-2 text-center">
-                    Try asking about services, pricing, or scheduling
-                  </p>
                 </div>
               </div>
-            ) : (
-              /* Voice Widget */
-              <div className="relative rounded-2xl border border-slate-700/50 bg-slate-900/90 backdrop-blur-sm overflow-hidden shadow-2xl">
-                {/* Phone CTA */}
-                {demoLink.demo_phone_number && (
-                  <div className="p-6 border-b border-slate-700/50 bg-gradient-to-r from-emerald-600/20 to-emerald-500/10">
-                    <div className="flex flex-col items-center text-center">
-                      <div className="relative mb-4">
-                        <div className="absolute inset-0 bg-emerald-500/30 rounded-full blur-lg animate-pulse" />
-                        <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-                          <PhoneCall className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                      <h3 className="text-lg font-semibold text-white mb-1">Call to Try It Live</h3>
-                      <p className="text-slate-400 text-sm mb-4">
-                        Dial now to speak with the AI voice agent
-                      </p>
-                      <a
-                        href={`tel:${demoLink.demo_phone_number.replace(/\D/g, '')}`}
-                        className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold text-xl hover:from-emerald-500 hover:to-emerald-400 transition-all duration-300 shadow-lg shadow-emerald-600/30 hover:shadow-emerald-500/40 hover:scale-[1.02]"
-                      >
-                        <Phone className="w-6 h-6" />
-                        {demoLink.demo_phone_number}
-                      </a>
-                    </div>
-                  </div>
-                )}
+            )}
 
-                {/* Voice Demo Body */}
-                <div className="p-8">
-                  {!callStarted ? (
-                    <div className="text-center">
-                      <div className="relative inline-block mb-6">
-                        <div className="absolute inset-0 bg-emerald-500/30 rounded-full blur-xl animate-pulse" />
-                        <button
-                          onClick={() => setCallStarted(true)}
-                          className="relative w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-xl shadow-emerald-600/30 hover:shadow-emerald-500/40 hover:scale-105 transition-all duration-300"
-                        >
-                          <Mic className="w-10 h-10 text-white" />
-                        </button>
-                      </div>
-                      <h3 className="text-xl font-semibold text-white mb-2">
-                        {demoLink.demo_phone_number ? "Or Try Web Demo" : "Start Voice Demo"}
-                      </h3>
-                      <p className="text-slate-400 mb-6">
-                        Click to start a conversation with the AI
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="text-center py-4">
-                      <div className="relative inline-block mb-6">
-                        <div className="absolute inset-0 bg-emerald-500/30 rounded-full blur-xl animate-pulse" />
-                        <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-                          <Mic className="w-10 h-10 text-white animate-pulse" />
-                        </div>
-                      </div>
-                      <h3 className="text-xl font-semibold text-white mb-2">Listening...</h3>
-                      <p className="text-slate-400 mb-6">Speak naturally - the AI is listening</p>
-
-                      {timeRemaining !== null && timeRemaining <= 0 && (
-                        <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                          <p className="text-amber-400 text-sm">
-                            Demo time has ended. Thank you for trying our voice assistant!
-                          </p>
-                        </div>
-                      )}
-
-                      <button
-                        onClick={() => setCallStarted(false)}
-                        className="px-6 py-2.5 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
-                      >
-                        End Demo
-                      </button>
-                    </div>
+            {/* Chat Bubble Button */}
+            <button
+              onClick={() => setIsChatOpen(!isChatOpen)}
+              className={`relative w-16 h-16 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 ${
+                isChatOpen
+                  ? "bg-gray-800 rotate-0"
+                  : "bg-gradient-to-br from-blue-600 to-blue-700 hover:scale-110"
+              }`}
+            >
+              {isChatOpen ? (
+                <X className="w-6 h-6 text-white" />
+              ) : (
+                <>
+                  <MessageSquare className="w-7 h-7 text-white" />
+                  {hasNewMessage && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs font-bold animate-pulse">
+                      1
+                    </span>
                   )}
-                </div>
+                </>
+              )}
+            </button>
+
+            {/* Prompt tooltip */}
+            {!isChatOpen && (
+              <div className="absolute bottom-20 right-0 bg-white rounded-lg shadow-lg px-4 py-2 animate-bounce">
+                <p className="text-sm text-gray-800 font-medium whitespace-nowrap">
+                  Need help? Chat with us!
+                </p>
+                <div className="absolute bottom-0 right-6 transform translate-y-1/2 rotate-45 w-3 h-3 bg-white" />
               </div>
             )}
           </div>
         </div>
+      ) : (
+        /* Voice Agent Demo */
+        <div className="min-h-[calc(100vh-52px)] bg-gradient-to-b from-slate-950 via-slate-925 to-slate-950 flex items-center justify-center p-6">
+          <div className="max-w-lg w-full">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm mb-4">
+                <Phone className="w-4 h-4" />
+                Voice Agent Demo
+              </div>
+              <h1 className="text-3xl font-bold text-white mb-2">{client.business_name}</h1>
+              <p className="text-slate-400">{client.service_area}</p>
+            </div>
 
-        {/* Bottom CTA */}
-        <div className="mt-12 text-center">
-          <div className="inline-flex flex-col items-center gap-4 p-6 rounded-2xl bg-gradient-to-r from-brand-600/10 to-violet-600/10 border border-brand-500/20">
-            <p className="text-slate-300">Ready to capture more leads for your business?</p>
-            <div className="flex items-center gap-2 text-brand-400 font-medium">
-              <span>Get started today</span>
-              <ArrowRight className="w-4 h-4" />
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-emerald-600/20 via-emerald-500/10 to-emerald-600/20 rounded-3xl blur-2xl" />
+
+              <div className="relative rounded-2xl border border-slate-700/50 bg-slate-900/90 backdrop-blur-sm overflow-hidden shadow-2xl">
+                {demoLink.demo_phone_number ? (
+                  <div className="p-8 text-center">
+                    <div className="relative inline-block mb-6">
+                      <div className="absolute inset-0 bg-emerald-500/30 rounded-full blur-xl animate-pulse" />
+                      <div className="relative w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                        <PhoneCall className="w-12 h-12 text-white" />
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-semibold text-white mb-2">Call to Try It Live</h3>
+                    <p className="text-slate-400 mb-6">
+                      Dial now to speak with the AI voice agent
+                    </p>
+                    <a
+                      href={`tel:${demoLink.demo_phone_number.replace(/\D/g, '')}`}
+                      className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold text-2xl hover:from-emerald-500 hover:to-emerald-400 transition-all duration-300 shadow-lg shadow-emerald-600/30 hover:shadow-emerald-500/40 hover:scale-[1.02]"
+                    >
+                      <Phone className="w-7 h-7" />
+                      {demoLink.demo_phone_number}
+                    </a>
+
+                    <div className="mt-8 pt-6 border-t border-slate-700/50">
+                      <p className="text-sm text-slate-500 mb-4">Voice Agent Features:</p>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex items-center gap-2 text-sm text-slate-300">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <span>24/7 Availability</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-slate-300">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <span>Natural Speech</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-slate-300">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <span>Lead Capture</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-slate-300">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                          <span>Appointment Booking</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-8 text-center">
+                    <p className="text-slate-400">No phone number configured for this demo.</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <div className="inline-flex items-center gap-2 text-sm text-slate-500">
-            <Shield className="w-4 h-4" />
-            <span>Private demo link</span>
-          </div>
+      {/* Footer Badge */}
+      <div className="fixed bottom-4 left-4 z-40">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 border border-slate-700/50 text-xs text-slate-400">
+          <Shield className="w-3 h-3" />
+          <span>Private Demo</span>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
