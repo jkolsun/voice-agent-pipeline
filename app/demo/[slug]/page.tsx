@@ -106,12 +106,85 @@ export default function DemoPage() {
     }
   }, [isChatOpen]);
 
-  // Simulated chat responses based on client data
+  // Check if client is in HVAC industry
+  const isHVAC = (industry: string) => {
+    const lower = industry.toLowerCase();
+    return lower.includes("hvac") || lower.includes("heating") || lower.includes("cooling") || lower.includes("air condition");
+  };
+
+  // Simulated chat responses based on client data and industry expertise
   const getAIResponse = (userMessage: string): string => {
     if (!client) return "I'm here to help!";
 
     const lowerMessage = userMessage.toLowerCase();
+    const hvacClient = isHVAC(client.industry);
 
+    // HVAC-specific responses
+    if (hvacClient) {
+      // AC not cooling / not working
+      if ((lowerMessage.includes("ac") || lowerMessage.includes("air condition") || lowerMessage.includes("cooling")) &&
+          (lowerMessage.includes("not") || lowerMessage.includes("isn't") || lowerMessage.includes("won't") || lowerMessage.includes("broken") || lowerMessage.includes("problem"))) {
+        return "I'm sorry to hear your AC isn't cooling properly. This could be caused by several things - a dirty air filter, low refrigerant, a frozen evaporator coil, or issues with the compressor. A quick thing you can check is your air filter - if it's clogged, that's often the culprit. Would you like me to schedule a technician to diagnose the issue?";
+      }
+
+      // Furnace / heating not working
+      if ((lowerMessage.includes("furnace") || lowerMessage.includes("heat") || lowerMessage.includes("warm")) &&
+          (lowerMessage.includes("not") || lowerMessage.includes("isn't") || lowerMessage.includes("won't") || lowerMessage.includes("broken") || lowerMessage.includes("problem"))) {
+        return "I understand - no heat is definitely uncomfortable! Common causes include thermostat issues, a tripped circuit breaker, a dirty filter restricting airflow, or pilot light/ignition problems. First, check that your thermostat is set to 'heat' and the temperature is set above room temp. Also check if the circuit breaker for your furnace has tripped. Would you like me to have a technician come take a look?";
+      }
+
+      // Strange noises
+      if (lowerMessage.includes("noise") || lowerMessage.includes("sound") || lowerMessage.includes("loud") || lowerMessage.includes("clicking") || lowerMessage.includes("banging") || lowerMessage.includes("squealing") || lowerMessage.includes("grinding")) {
+        return "Strange noises from your HVAC system can indicate different issues. Squealing often means a belt or motor issue, grinding suggests motor bearings may be failing, clicking could be an electrical problem, and banging might mean loose parts. If you're hearing a hissing sound, that could indicate a refrigerant leak. What type of noise are you hearing? I can have a technician diagnose it for you.";
+      }
+
+      // Refrigerant / freon
+      if (lowerMessage.includes("refrigerant") || lowerMessage.includes("freon") || lowerMessage.includes("r22") || lowerMessage.includes("r410")) {
+        return "Good question about refrigerant! If your system is low on refrigerant, it usually means there's a leak that needs to be found and repaired. R-22 (Freon) is being phased out, so if you have an older system using R-22, it may be more cost-effective to upgrade to a newer system using R-410A. Our technicians can evaluate your system and provide recommendations.";
+      }
+
+      // Filter questions
+      if (lowerMessage.includes("filter")) {
+        return "Great question! Air filters should be changed every 1-3 months, or monthly if you have pets or allergies. A dirty filter is actually the #1 cause of HVAC problems - it restricts airflow and makes your system work harder, increasing energy costs and wear. What size filter does your system use? I can help make sure you have the right one.";
+      }
+
+      // Thermostat issues
+      if (lowerMessage.includes("thermostat")) {
+        return "Thermostat issues can definitely affect your comfort! If it's not responding, check if it needs new batteries. If temperatures seem off, the thermostat might need recalibration, or it could be in a location that gets direct sunlight or drafts. We also install smart thermostats like Nest and Ecobee, which can save 10-15% on energy bills. Would you like more information?";
+      }
+
+      // Emergency / urgent situations
+      if (lowerMessage.includes("emergency") || lowerMessage.includes("urgent") || lowerMessage.includes("gas smell") || lowerMessage.includes("carbon monoxide") || lowerMessage.includes("burning smell")) {
+        return "If you smell gas, please leave your home immediately and call your gas company from outside. For carbon monoxide alarms, evacuate and call 911. If you're experiencing a burning electrical smell, turn off your HVAC system at the breaker. These are safety emergencies. For other urgent HVAC issues like no heat in freezing weather or no AC in extreme heat, we do offer emergency service. What's your situation?";
+      }
+
+      // Maintenance / tune-up
+      if (lowerMessage.includes("maintenance") || lowerMessage.includes("tune") || lowerMessage.includes("check") || lowerMessage.includes("inspection")) {
+        return "Regular maintenance is key to keeping your system efficient and preventing breakdowns! We recommend a tune-up twice a year - once in spring for your AC and once in fall for your heating. A tune-up typically includes checking refrigerant levels, cleaning coils, inspecting electrical connections, and testing system performance. Would you like to schedule a maintenance visit?";
+      }
+
+      // Efficiency / energy bills
+      if (lowerMessage.includes("efficien") || lowerMessage.includes("energy") || lowerMessage.includes("bill") || lowerMessage.includes("electric") || lowerMessage.includes("save money")) {
+        return "There are several ways to improve HVAC efficiency! Regular filter changes, annual maintenance, sealing duct leaks, and upgrading to a programmable thermostat all help. If your system is 10-15+ years old, newer units with higher SEER ratings can cut cooling costs by 20-40%. The current minimum SEER rating is 14-15, but high-efficiency units go up to 20+. Want me to schedule an efficiency evaluation?";
+      }
+
+      // New system / replacement
+      if (lowerMessage.includes("new system") || lowerMessage.includes("replace") || lowerMessage.includes("install") || lowerMessage.includes("upgrade") || lowerMessage.includes("new unit")) {
+        return "Thinking about a new system? If your current unit is 10-15+ years old, frequently needs repairs, or your energy bills keep rising, it might be time. Modern systems are much more efficient - a new high-efficiency unit could reduce your energy bills significantly. We offer free in-home estimates and can discuss options including financing. Would you like to schedule a consultation?";
+      }
+
+      // Heat pump
+      if (lowerMessage.includes("heat pump")) {
+        return "Heat pumps are a great option! They provide both heating and cooling in one unit and are very energy efficient since they move heat rather than generate it. They work best in moderate climates, but newer models work well even in colder temperatures. If your heat pump is freezing up, short cycling, or not switching between heating and cooling modes, that typically indicates a refrigerant issue or a problem with the reversing valve.";
+      }
+
+      // Water leak from AC
+      if (lowerMessage.includes("water") && (lowerMessage.includes("leak") || lowerMessage.includes("drip") || lowerMessage.includes("puddle"))) {
+        return "Water leaking from your AC is usually caused by a clogged condensate drain line - this is pretty common and can often be cleared. It could also be a frozen evaporator coil that's melting, or a cracked drain pan. Turn off your system to prevent water damage, and we can send a technician to fix it. Where is the water collecting - near your indoor unit or outside?";
+      }
+    }
+
+    // General responses (work for any industry)
     if (lowerMessage.includes("service") || lowerMessage.includes("offer") || lowerMessage.includes("do you")) {
       return `We offer a wide range of services including ${client.services.slice(0, 3).join(", ")}, and more. Would you like me to tell you more about any specific service?`;
     }
@@ -138,6 +211,11 @@ export default function DemoPage() {
 
     if (lowerMessage.includes("hello") || lowerMessage.includes("hi") || lowerMessage.includes("hey")) {
       return `Hello! Thanks for reaching out. How can I help you today?`;
+    }
+
+    // Default with industry-specific flavor
+    if (hvacClient) {
+      return "I'd be happy to help with any HVAC questions! Whether it's about your AC, furnace, heat pump, air quality, or maintenance, I'm here to assist. What can I help you with today?";
     }
 
     return `Great question! Is there anything specific about our ${client.services[0] || "services"} I can help you with?`;

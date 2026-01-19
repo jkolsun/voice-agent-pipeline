@@ -1,6 +1,282 @@
 import { ClientDemo } from "./types";
 
 // ==============================================================================
+// INDUSTRY KNOWLEDGE BASES
+// ==============================================================================
+
+const HVAC_KNOWLEDGE = `
+## HVAC Industry Expertise
+
+You are highly knowledgeable about heating, ventilation, and air conditioning systems. Use this expertise to have informed conversations with callers about their HVAC needs.
+
+### Common HVAC Problems & Causes
+
+**Air Conditioning Issues:**
+- **AC not cooling**: Could be low refrigerant, dirty air filter, frozen evaporator coil, faulty compressor, thermostat issues, or blocked condenser unit
+- **AC running constantly**: Undersized unit, refrigerant leak, dirty coils, extreme outdoor temps, poor insulation
+- **AC short cycling (turning on/off frequently)**: Oversized unit, refrigerant issues, electrical problems, frozen coil
+- **Weak airflow**: Clogged filter, blocked vents, ductwork issues, failing blower motor
+- **Strange noises**: Squealing (belt/motor), grinding (motor bearings), clicking (electrical), banging (loose parts), hissing (refrigerant leak)
+- **Water leaking**: Clogged condensate drain, frozen evaporator coil, improper installation
+- **Bad odors**: Musty smell (mold in ducts), burning smell (electrical/motor issue), rotten egg (gas leak - emergency!)
+
+**Heating/Furnace Issues:**
+- **Furnace not heating**: Thermostat settings, pilot light out, ignition problems, gas supply, dirty filter
+- **Furnace blowing cold air**: Thermostat issue, pilot light, overheated system, ductwork leaks
+- **Furnace short cycling**: Dirty filter, thermostat placement, oversized unit, flame sensor issues
+- **Yellow pilot light**: Carbon monoxide risk - should be blue. This is urgent.
+- **Furnace making noise**: Rumbling (dirty burners), squealing (belt/motor), popping (ductwork expansion)
+
+**Heat Pump Issues:**
+- **Heat pump not switching modes**: Reversing valve failure, thermostat issues
+- **Heat pump freezing up**: Low refrigerant, poor airflow, outdoor unit blocked
+- **Heat pump running in emergency heat**: Outdoor unit malfunction, defrost cycle issues
+
+### Emergency vs Non-Emergency Situations
+
+**EMERGENCIES (Immediate attention needed):**
+- Gas smell (leave house, call gas company first, then HVAC)
+- Carbon monoxide detector going off
+- Burning electrical smell
+- Complete system failure in extreme temperatures (below 32°F or above 95°F)
+- Flooding from HVAC system
+- Sparking or electrical arcing
+
+**URGENT (Same-day or next-day service):**
+- AC not cooling in summer heat (above 85°F)
+- Furnace not heating in cold weather (below 40°F)
+- Strange burning smell (non-electrical)
+- Water actively leaking
+- Unusual loud noises during operation
+
+**ROUTINE (Schedule within a few days):**
+- Slightly reduced cooling/heating
+- Minor temperature inconsistencies
+- Preventive maintenance
+- Filter replacement
+- Thermostat upgrades
+- Efficiency concerns
+
+### Seasonal HVAC Information
+
+**Spring:**
+- Ideal time for AC tune-up before summer
+- Check refrigerant levels
+- Clean condenser coils
+- Test cooling mode thoroughly
+
+**Summer:**
+- Most common AC problems occur now
+- Keep filters clean (check monthly)
+- Keep outdoor unit clear of debris
+- Set thermostat to 78°F when home for efficiency
+
+**Fall:**
+- Schedule furnace inspection before winter
+- Check heat exchanger for cracks
+- Test heating mode
+- Consider duct cleaning
+- Change filter before heating season
+
+**Winter:**
+- Most furnace problems surface now
+- Keep vents clear of furniture/rugs
+- Don't set thermostat below 65°F to prevent pipe freezing
+- Check for drafts around windows/doors
+
+### Common HVAC Terms (Speak Knowledgeably)
+
+- **SEER Rating**: Seasonal Energy Efficiency Ratio - higher is more efficient (minimum 14-15 for new units)
+- **AFUE**: Annual Fuel Utilization Efficiency - furnace efficiency rating (90%+ is high efficiency)
+- **BTU**: British Thermal Unit - measures heating/cooling capacity
+- **Tonnage**: AC capacity (1 ton = 12,000 BTUs, typical home is 2-5 tons)
+- **Heat Exchanger**: Critical furnace component that transfers heat; cracks can cause CO leaks
+- **Evaporator Coil**: Indoor coil that absorbs heat (AC/heat pump)
+- **Condenser Coil**: Outdoor coil that releases heat
+- **Refrigerant**: Cooling chemical (R-410A is current standard, R-22 is phased out)
+- **Compressor**: Heart of AC system; pumps refrigerant
+- **Blower Motor**: Circulates air through system
+- **Capacitor**: Electrical component that helps motors start
+- **Contactor**: Electrical switch for outdoor unit
+- **Ductwork**: Air distribution channels throughout home
+- **Return Air**: Air pulled back into system for conditioning
+- **Supply Air**: Conditioned air delivered to rooms
+- **CFM**: Cubic Feet per Minute - airflow measurement
+- **Static Pressure**: Resistance to airflow in ducts
+
+### Helpful Tips to Share with Callers
+
+**Troubleshooting They Can Try:**
+1. Check/replace air filter (dirty filter is #1 cause of issues)
+2. Make sure thermostat is set correctly and has batteries
+3. Check circuit breakers for HVAC system
+4. Ensure all vents are open and unblocked
+5. Look at outdoor unit - is it running? Is it blocked by debris?
+6. Check if condensate drain line is clogged (wet switch may have tripped)
+
+**Maintenance Reminders:**
+- Change filter every 1-3 months (monthly if you have pets)
+- Schedule professional tune-up twice yearly (spring and fall)
+- Keep 2 feet clearance around outdoor unit
+- Keep vents and returns unobstructed
+- Consider programmable or smart thermostat for efficiency
+
+### Response Approach for HVAC Calls
+
+1. **Listen carefully** to symptoms - clicking, humming, not starting, weak airflow, etc.
+2. **Ask clarifying questions**: How old is the system? When did the problem start? Any recent changes?
+3. **Acknowledge their situation**: "That sounds frustrating, especially in this heat/cold"
+4. **Show expertise**: Use appropriate technical terms naturally
+5. **Assess urgency**: Is this an emergency, urgent, or routine issue?
+6. **Explain next steps**: What a technician will likely check/do
+7. **Capture information**: Make sure to get their details for follow-up
+`;
+
+const PLUMBING_KNOWLEDGE = `
+## Plumbing Industry Expertise
+
+You are knowledgeable about plumbing systems and common issues homeowners face.
+
+### Common Plumbing Problems
+
+- **Clogged drains**: Hair, grease, soap buildup, foreign objects
+- **Leaky faucets**: Worn washers, O-rings, or cartridges
+- **Running toilet**: Flapper valve, fill valve, or float issues
+- **Low water pressure**: Pipe corrosion, leaks, municipal supply issues
+- **Water heater issues**: No hot water, not enough hot water, strange noises
+- **Pipe leaks**: Corrosion, joint failure, freezing damage
+- **Sewer line problems**: Root intrusion, bellied pipe, breaks
+
+### Emergency Situations
+
+- Burst pipes or major leaks
+- Sewage backup
+- No water to entire house
+- Gas water heater leaking gas
+- Flooding
+
+### Helpful Tips
+
+- Know where main water shut-off is located
+- Don't use chemical drain cleaners (damages pipes)
+- Never pour grease down drains
+- Schedule annual water heater flush
+`;
+
+const ELECTRICAL_KNOWLEDGE = `
+## Electrical Industry Expertise
+
+You understand residential and commercial electrical systems and safety.
+
+### Common Electrical Issues
+
+- **Tripping breakers**: Overloaded circuits, short circuits, ground faults
+- **Flickering lights**: Loose connections, overloaded circuits, failing fixtures
+- **Dead outlets**: Tripped GFCI, loose wiring, bad outlet
+- **Burning smell**: Potential emergency - overheating wires
+- **Buzzing sounds**: Loose connections, bad breakers, failing fixtures
+
+### Emergency Situations
+
+- Sparking outlets
+- Burning smell from electrical
+- Exposed wires
+- Electrical shock incidents
+- Power loss to part of home with burning smell
+
+### Safety Reminders
+
+- Never touch electrical with wet hands
+- Don't overload outlets
+- Use proper wattage bulbs
+- Test GFCI outlets monthly
+- Get panel inspected if over 25 years old
+`;
+
+const LANDSCAPING_KNOWLEDGE = `
+## Landscaping Industry Expertise
+
+You understand landscaping services and seasonal maintenance needs.
+
+### Common Services
+
+- Lawn mowing and maintenance
+- Mulching and bed maintenance
+- Tree and shrub trimming
+- Spring/fall cleanup
+- Leaf removal
+- Irrigation system maintenance
+- Landscape design and installation
+- Hardscaping (patios, walkways, retaining walls)
+- Drainage solutions
+
+### Seasonal Considerations
+
+- **Spring**: Cleanup, mulching, first mow, fertilization
+- **Summer**: Regular mowing, irrigation monitoring, pest control
+- **Fall**: Leaf removal, aeration, overseeding, winterizing irrigation
+- **Winter**: Snow removal, planning for spring
+`;
+
+const GENERAL_HOME_SERVICES_KNOWLEDGE = `
+## General Home Services Expertise
+
+You understand the basics of home maintenance and repair services.
+
+### Common Service Categories
+
+- Handyman services
+- Home repairs
+- Renovation projects
+- Maintenance contracts
+- Emergency services
+
+### Key Questions to Ask
+
+- What is the nature of the problem?
+- How urgent is the issue?
+- When did the problem start?
+- Have you noticed any related issues?
+- What is the age of your home/system?
+`;
+
+// Map industries to their knowledge bases
+function getIndustryKnowledge(industry: string): string {
+  const industryMap: Record<string, string> = {
+    "HVAC": HVAC_KNOWLEDGE,
+    "Heating & Cooling": HVAC_KNOWLEDGE,
+    "Air Conditioning": HVAC_KNOWLEDGE,
+    "Plumbing": PLUMBING_KNOWLEDGE,
+    "Electrical": ELECTRICAL_KNOWLEDGE,
+    "Landscaping": LANDSCAPING_KNOWLEDGE,
+    "Lawn Care": LANDSCAPING_KNOWLEDGE,
+  };
+
+  // Check for exact match first
+  if (industryMap[industry]) {
+    return industryMap[industry];
+  }
+
+  // Check for partial matches (case-insensitive)
+  const lowerIndustry = industry.toLowerCase();
+  if (lowerIndustry.includes("hvac") || lowerIndustry.includes("heating") || lowerIndustry.includes("cooling") || lowerIndustry.includes("air condition")) {
+    return HVAC_KNOWLEDGE;
+  }
+  if (lowerIndustry.includes("plumb")) {
+    return PLUMBING_KNOWLEDGE;
+  }
+  if (lowerIndustry.includes("electric")) {
+    return ELECTRICAL_KNOWLEDGE;
+  }
+  if (lowerIndustry.includes("landscape") || lowerIndustry.includes("lawn")) {
+    return LANDSCAPING_KNOWLEDGE;
+  }
+
+  // Default to general knowledge
+  return GENERAL_HOME_SERVICES_KNOWLEDGE;
+}
+
+// ==============================================================================
 // HELPER: Build website context for enriched prompts
 // ==============================================================================
 function buildWebsiteContext(client: ClientDemo): string {
@@ -192,6 +468,10 @@ If asked something outside scope:
 If caller is frustrated:
 "I understand, and I apologize for any inconvenience. Let me make sure someone gets back to you as soon as possible."
 ${buildWebsiteContext(client)}
+---
+
+${getIndustryKnowledge(client.industry)}
+
 ---
 
 # END OF DEMO SYSTEM PROMPT
