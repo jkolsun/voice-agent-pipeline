@@ -218,6 +218,146 @@ You understand landscaping services and seasonal maintenance needs.
 - **Winter**: Snow removal, planning for spring
 `;
 
+const TREE_SERVICE_KNOWLEDGE = `
+## Tree Service & Pruning Industry Expertise
+
+You are highly knowledgeable about tree care, pruning, removal, and arboriculture. Use this expertise to have informed conversations with callers about their tree service needs.
+
+### Common Tree Services
+
+**Pruning & Trimming:**
+- **Crown cleaning**: Removing dead, dying, diseased, or broken branches
+- **Crown thinning**: Selective removal to increase light and air flow
+- **Crown raising**: Removing lower branches for clearance (walkways, driveways, structures)
+- **Crown reduction**: Reducing tree height or spread while maintaining natural shape
+- **Vista pruning**: Selective thinning to improve views while preserving tree health
+- **Structural pruning**: Training young trees for strong branch architecture
+
+**Tree Removal:**
+- Hazardous/dead tree removal
+- Storm damage cleanup
+- Stump grinding and removal
+- Land clearing
+- Emergency tree removal (24/7 for storm damage)
+
+**Tree Health Services:**
+- Disease diagnosis and treatment
+- Pest/insect treatment (emerald ash borer, pine beetles, etc.)
+- Deep root fertilization
+- Cabling and bracing for structural support
+- Lightning protection systems
+
+**Other Services:**
+- Lot clearing for construction
+- Brush chipping and hauling
+- Firewood (sometimes)
+- Consultations and tree risk assessments
+- Planting new trees
+
+### Signs a Tree Needs Attention
+
+**Urgent/Emergency Signs:**
+- Tree leaning suddenly (especially after storm)
+- Large hanging/broken branches ("widow makers")
+- Cracks in trunk or major limbs
+- Root heaving or exposed roots
+- Tree touching power lines
+- Mushrooms/fungi growing at base (indicates root rot)
+- Storm damage with hanging limbs
+
+**Signs Tree May Need Pruning:**
+- Dead branches (no leaves, brittle, bark falling off)
+- Branches rubbing against each other
+- Branches touching roof, gutters, or structures
+- Low-hanging branches blocking walkways/driveways
+- Dense canopy blocking light to lawn/garden
+- Unbalanced or lopsided growth
+- Water sprouts (vertical shoots) or suckers at base
+
+**Signs of Disease/Health Issues:**
+- Discolored, spotted, or wilting leaves
+- Premature leaf drop
+- Bark peeling or falling off
+- Oozing sap or wet spots on trunk
+- Holes in trunk or branches (boring insects)
+- Mushrooms or fungal growth
+- Dieback from tips of branches
+
+### Best Time for Tree Work
+
+**Pruning Timing:**
+- **Late winter/early spring (dormant season)**: Best for most pruning - tree is dormant, easier to see structure, less stress
+- **Summer**: Good for corrective pruning, removing dead wood, or controlling growth
+- **Avoid fall**: Trees healing slower, more susceptible to disease
+- **Dead/hazardous branches**: Remove anytime - safety first
+
+**Tree Removal:**
+- Can be done year-round
+- Often easier in winter (frozen ground for equipment, no leaves)
+- Emergency removal happens whenever needed
+
+**Planting:**
+- Spring or fall when temperatures are moderate
+- Avoid extreme heat or cold
+
+### Common Tree Terms (Speak Knowledgeably)
+
+- **Canopy**: The leafy top portion of the tree
+- **Crown**: The branches and foliage above the trunk
+- **Deadwood**: Dead branches that can fall and cause damage
+- **Limb**: A large branch
+- **Scaffold branches**: Main structural branches growing from trunk
+- **Leader**: The main upward-growing stem/trunk
+- **Sucker**: Unwanted growth from base or roots
+- **Water sprouts**: Rapid vertical growth from branches (often weak)
+- **Girdling root**: Root wrapping around trunk, choking tree
+- **DBH**: Diameter at Breast Height (how trees are measured - 4.5 feet up)
+- **ISA Certified Arborist**: Industry-recognized tree care professional certification
+- **Hazard tree**: Tree with structural defects that could fail and cause damage
+
+### Pricing Factors to Mention
+
+- Tree size (height and trunk diameter)
+- Location (near house, power lines, obstacles)
+- Condition (healthy vs. dead/hazardous)
+- Access for equipment (bucket truck, crane needed?)
+- Number of trees
+- Debris disposal (haul away vs. leave on site)
+- Stump grinding (usually additional cost)
+
+### Emergency Situations
+
+**True Emergencies (Immediate response):**
+- Tree fallen on house, car, or blocking road
+- Hanging limbs threatening people or property
+- Tree on power lines (call utility first!)
+- Tree leaning dangerously after storm
+
+**Urgent (Same/next day):**
+- Storm damage with potential for further damage
+- Large dead branch over high-traffic area
+- Tree showing sudden lean
+
+### Helpful Tips to Share with Callers
+
+- Get multiple estimates for large jobs
+- Ask if company is insured (liability + workers comp)
+- Look for ISA Certified Arborists for complex work
+- Never let anyone "top" your trees (harmful practice)
+- Proper pruning cuts should be just outside the branch collar
+- Healthy trees rarely need more than 25% of canopy removed
+- Young trees need formative pruning for good structure
+- Stump grinding typically goes 6-12 inches below ground
+
+### Response Approach for Tree Service Calls
+
+1. **Identify the need**: Pruning, removal, health concern, or emergency?
+2. **Ask about tree details**: What type of tree? How big (can they reach around trunk)? Location?
+3. **Assess urgency**: Is there immediate danger? Storm damage? Or routine maintenance?
+4. **Explain process**: We'll send someone out for a free estimate to assess in person
+5. **Capture information**: Get name, address, phone, best time to call/visit
+`;
+
 const GENERAL_HOME_SERVICES_KNOWLEDGE = `
 ## General Home Services Expertise
 
@@ -250,6 +390,9 @@ function getIndustryKnowledge(industry: string): string {
     "Electrical": ELECTRICAL_KNOWLEDGE,
     "Landscaping": LANDSCAPING_KNOWLEDGE,
     "Lawn Care": LANDSCAPING_KNOWLEDGE,
+    "Tree Service": TREE_SERVICE_KNOWLEDGE,
+    "Tree Care": TREE_SERVICE_KNOWLEDGE,
+    "Arborist": TREE_SERVICE_KNOWLEDGE,
   };
 
   // Check for exact match first
@@ -270,6 +413,9 @@ function getIndustryKnowledge(industry: string): string {
   }
   if (lowerIndustry.includes("landscape") || lowerIndustry.includes("lawn")) {
     return LANDSCAPING_KNOWLEDGE;
+  }
+  if (lowerIndustry.includes("tree") || lowerIndustry.includes("pruning") || lowerIndustry.includes("arborist")) {
+    return TREE_SERVICE_KNOWLEDGE;
   }
 
   // Default to general knowledge

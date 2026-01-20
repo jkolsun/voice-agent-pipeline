@@ -94,12 +94,19 @@ export default function DemoPage() {
     return lower.includes("hvac") || lower.includes("heating") || lower.includes("cooling") || lower.includes("air condition");
   };
 
+  // Check if client is in tree service industry
+  const isTreeService = (industry: string) => {
+    const lower = industry.toLowerCase();
+    return lower.includes("tree") || lower.includes("pruning") || lower.includes("arborist");
+  };
+
   // Simulated chat responses based on client data and industry expertise
   const getAIResponse = (userMessage: string): string => {
     if (!client) return "I'm here to help!";
 
     const lowerMessage = userMessage.toLowerCase();
     const hvacClient = isHVAC(client.industry);
+    const treeClient = isTreeService(client.industry);
 
     // HVAC-specific responses
     if (hvacClient) {
@@ -154,6 +161,59 @@ export default function DemoPage() {
       }
     }
 
+    // Tree service-specific responses
+    if (treeClient) {
+      // Tree removal
+      if (lowerMessage.includes("remov") || lowerMessage.includes("take down") || lowerMessage.includes("cut down") || lowerMessage.includes("get rid of")) {
+        return "I can help with tree removal! To give you an accurate estimate, we'd need to assess the tree in person. Factors that affect pricing include the tree's size, location (near structures or power lines), condition, and access for our equipment. We also offer stump grinding as an additional service. Would you like to schedule a free estimate?";
+      }
+
+      // Pruning/trimming
+      if (lowerMessage.includes("prun") || lowerMessage.includes("trim") || lowerMessage.includes("cut back") || lowerMessage.includes("shape")) {
+        return "We offer professional pruning services! Proper pruning improves tree health, appearance, and safety. We can do crown cleaning to remove dead branches, crown thinning for better light and airflow, or crown raising to clear structures and walkways. The best time for most pruning is late winter or early spring when trees are dormant. Would you like to schedule an estimate?";
+      }
+
+      // Dead tree / dead branches
+      if (lowerMessage.includes("dead") || lowerMessage.includes("dying")) {
+        return "Dead or dying trees and branches should definitely be addressed - they can be a safety hazard, especially during storms. Dead branches (we call them 'deadwood') can fall unexpectedly. If you have a dead tree, removal is usually recommended before it becomes unstable. We can come out and assess the situation. Is this an urgent safety concern or more of a routine matter?";
+      }
+
+      // Storm damage / emergency
+      if (lowerMessage.includes("storm") || lowerMessage.includes("fell") || lowerMessage.includes("fallen") || lowerMessage.includes("emergency") || lowerMessage.includes("urgent") || lowerMessage.includes("down")) {
+        return "For storm damage and emergencies, we offer 24/7 service. If a tree has fallen on your house, car, or is blocking your driveway, we can prioritize getting someone out quickly. If there are hanging branches that could fall, please keep a safe distance. Is anyone in immediate danger, or is the tree touching power lines? If so, please call 911 and your utility company first.";
+      }
+
+      // Stump grinding
+      if (lowerMessage.includes("stump")) {
+        return "Yes, we offer stump grinding! After a tree is removed, we can grind the stump down 6-12 inches below ground level. This allows you to plant grass, garden over the area, or even plant a new tree nearby. Stump grinding is usually priced separately from tree removal based on the stump diameter. Would you like to include this with a tree removal, or do you have an existing stump you need ground?";
+      }
+
+      // Disease / sick tree
+      if (lowerMessage.includes("disease") || lowerMessage.includes("sick") || lowerMessage.includes("dying") || lowerMessage.includes("spots") || lowerMessage.includes("fungus") || lowerMessage.includes("mushroom")) {
+        return "Tree diseases can be concerning! Common signs include discolored leaves, premature leaf drop, bark damage, or fungal growth. Mushrooms at the base often indicate root rot, which is serious. Some diseases can be treated if caught early, while others may require removal to prevent spread to nearby trees. Can you describe what you're seeing? Our arborist can assess it during a site visit.";
+      }
+
+      // Estimate / quote / price
+      if (lowerMessage.includes("estimat") || lowerMessage.includes("quote") || lowerMessage.includes("price") || lowerMessage.includes("cost") || lowerMessage.includes("how much")) {
+        return "We offer free on-site estimates! Tree work pricing depends on several factors: tree size and type, location (near structures, fences, or power lines), whether it's healthy or hazardous, access for equipment, and what you want done with the debris. Our estimator will assess everything and provide a detailed quote. Would you like to schedule an estimate?";
+      }
+
+      // When to prune / best time
+      if (lowerMessage.includes("when") && (lowerMessage.includes("prune") || lowerMessage.includes("trim") || lowerMessage.includes("best time"))) {
+        return "Great question! For most trees, late winter to early spring (while dormant) is the best time for pruning - it's easier to see the branch structure and causes less stress to the tree. However, dead or hazardous branches should be removed anytime for safety. Summer pruning is fine for minor corrective work. We generally avoid heavy pruning in fall. What type of tree are you looking to have pruned?";
+      }
+
+      // Branches over house / near structures
+      if (lowerMessage.includes("house") || lowerMessage.includes("roof") || lowerMessage.includes("gutter") || lowerMessage.includes("power line") || lowerMessage.includes("structure")) {
+        return "Branches overhanging your roof or near power lines are definitely worth addressing. They can damage shingles, clog gutters, and pose a risk during storms. We can do crown raising to provide clearance, or selectively remove branches that are too close to structures. For branches near power lines, we follow specific safety protocols. Would you like us to come take a look?";
+      }
+
+      // Leaning tree
+      if (lowerMessage.includes("lean") || lowerMessage.includes("tilting")) {
+        return "A leaning tree can be concerning, especially if it started leaning recently. Trees that have always leaned may be stable, but sudden leaning - particularly after a storm or heavy rain - could indicate root problems and potential failure. This is something we'd want to assess in person to determine if it's hazardous. Has this been a gradual lean or something more recent?";
+      }
+    }
+
     // General responses (work for any industry)
     if (lowerMessage.includes("service") || lowerMessage.includes("offer") || lowerMessage.includes("do you")) {
       return `We offer a wide range of services including ${client.services.slice(0, 3).join(", ")}, and more. Would you like me to tell you more about any specific service?`;
@@ -186,6 +246,10 @@ export default function DemoPage() {
     // Default with industry-specific flavor
     if (hvacClient) {
       return "I'd be happy to help with any HVAC questions! Whether it's about your AC, furnace, heat pump, air quality, or maintenance, I'm here to assist. What can I help you with today?";
+    }
+
+    if (treeClient) {
+      return "I'd be happy to help with your tree care needs! Whether you need pruning, tree removal, stump grinding, or have concerns about a tree's health, I'm here to assist. What can I help you with today?";
     }
 
     return `Great question! Is there anything specific about our ${client.services[0] || "services"} I can help you with?`;
@@ -409,14 +473,28 @@ export default function DemoPage() {
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4">Try asking about:</h3>
                 <div className="space-y-3">
-                  {[
+                  {(isTreeService(client.industry) ? [
+                    "I need a tree removed from my backyard",
+                    "Can you trim the branches near my roof?",
+                    "I have a dead tree that needs to come down",
+                    "How much does stump grinding cost?",
+                    "When is the best time to prune my trees?",
+                    "A tree fell during the storm - can you help?",
+                  ] : isHVAC(client.industry) ? [
                     "My AC isn't cooling properly",
                     "I need to schedule a maintenance visit",
                     "My furnace is making a strange noise",
                     "How often should I change my filter?",
                     "What services do you offer?",
                     "Do you have emergency service?",
-                  ].map((prompt, i) => (
+                  ] : [
+                    "What services do you offer?",
+                    "I need to schedule an appointment",
+                    "What areas do you serve?",
+                    "What are your business hours?",
+                    "Can I get a quote?",
+                    "Do you have emergency service?",
+                  ]).map((prompt, i) => (
                     <button
                       key={i}
                       onClick={() => {
@@ -439,7 +517,7 @@ export default function DemoPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-brand-400" />
-                    <span>HVAC expertise built-in</span>
+                    <span>{isTreeService(client.industry) ? "Tree care expertise built-in" : isHVAC(client.industry) ? "HVAC expertise built-in" : "Industry expertise built-in"}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-brand-400" />
